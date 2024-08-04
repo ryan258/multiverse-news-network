@@ -1,5 +1,5 @@
 const axios = require('axios');
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '..', '.env') });
 
 class MultiverseSocialMediaSimulator {
     constructor() {
@@ -72,31 +72,6 @@ Ensure the posts and reactions reflect the unique aspects of this alternate univ
 
         return posts;
     }
-
-    formatPostsForDisplay(posts) {
-        return posts.map(post => `
-            User: ${post.username}
-            Post: "${post.post}"
-            Likes: ${post.likes} | Shares: ${post.shares} | Comments: ${post.comments}
-            
-            Top Reactions:
-            ${post.reactions.map(reaction => `- ${reaction.username}: "${reaction.comment}"`).join('\n')}
-            
-            ${'-'.repeat(50)}
-        `).join('\n');
-    }
 }
 
 module.exports = MultiverseSocialMediaSimulator;
-
-// Example usage:
-/*
-async function runSocialMediaSimulation(universeDescription, newsReport) {
-    const simulator = new MultiverseSocialMediaSimulator();
-    const rawContent = await simulator.generateSocialMediaContent(universeDescription, newsReport);
-    const parsedPosts = simulator.parseAndFormatContent(rawContent);
-    const formattedDisplay = simulator.formatPostsForDisplay(parsedPosts);
-    console.log(formattedDisplay);
-    return parsedPosts;  // Return structured data for potential further use
-}
-*/
