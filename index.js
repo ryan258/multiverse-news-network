@@ -97,9 +97,12 @@ async function multiverseNewsSession() {
         const newsReport = await newsReporterAgent(universeDescription);
 
         const simulator = new MultiverseSocialMediaSimulator();
-        const socialMediaContent = await simulator.generateSocialMediaContent(universeDescription, newsReport);
+        const rawSocialMediaContent = await simulator.generateSocialMediaContent(universeDescription, newsReport);
+        const parsedPosts = simulator.parseAndFormatContent(rawSocialMediaContent);
+        const formattedSocialMedia = simulator.formatPostsForDisplay(parsedPosts);
+        
         await logOutput("\n=== Multiverse Social Media Buzz ===");
-        await logOutput(socialMediaContent);
+        await logOutput(formattedSocialMedia);
         
         const commentary = await commentaryAgent(universeDescription, newsReport);
         

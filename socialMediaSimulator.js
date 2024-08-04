@@ -16,11 +16,13 @@ ${universeDescription}
 News Report:
 ${newsReport}
 
-For each post, provide:
-1. The username of the poster (fictional)
-2. The content of the post
-3. The number of likes, shares, and comments
-4. 2-3 sample comments with usernames
+For each post, provide the following in a structured format:
+1. USERNAME: The username of the poster (fictional)
+2. POST: The content of the post
+3. LIKES: Number of likes
+4. SHARES: Number of shares
+5. COMMENTS: Number of comments
+6. REACTIONS: 2-3 sample comments with usernames
 
 Ensure the posts and reactions reflect the unique aspects of this alternate universe.`;
 
@@ -41,9 +43,47 @@ Ensure the posts and reactions reflect the unique aspects of this alternate univ
     }
 
     parseAndFormatContent(content) {
-        // This method would parse the AI-generated content and format it into a structured object
-        // For simplicity, we'll just return the raw content for now
-        return content;
+        const posts = [];
+        const postRegex = /USERNAME: (.*?)\nPOST: (.*?)\nLIKES: (\d+)\nSHARES: (\d+)\nCOMMENTS: (\d+)\nREACTIONS:([\s\S]*?)(?=\n\nUSERNAME:|$)/g;
+        const commentRegex = /(\w+): (.*)/g;
+
+        let match;
+        while ((match = postRegex.exec(content)) !== null) {
+            const [, username, post, likes, shares, comments, reactionsRaw] = match;
+            const reactions = [];
+
+            let commentMatch;
+            while ((commentMatch = commentRegex.exec(reactionsRaw)) !== null) {
+                reactions.push({
+                    username: commentMatch[1],
+                    comment: commentMatch[2].trim()
+                });
+            }
+
+            posts.push({
+                username: username.trim(),
+                post: post.trim(),
+                likes: parseInt(likes),
+                shares: parseInt(shares),
+                comments: parseInt(comments),
+                reactions: reactions
+            });
+        }
+
+        return posts;
+    }
+
+    formatPostsForDisplay(posts) {
+        return posts.map(post => `
+            User: ${post.username}
+            Post: "${post.post}"
+            Likes: ${post.likes} | Shares: ${post.shares} | Comments: ${post.comments}
+            
+            Top Reactions:
+            ${post.reactions.map(reaction => `- ${reaction.username}: "${reaction.comment}"`).join('\n')}
+            
+            ${'-'.repeat(50)}
+        `).join('\n');
     }
 }
 
@@ -54,9 +94,9 @@ module.exports = MultiverseSocialMediaSimulator;
 async function runSocialMediaSimulation(universeDescription, newsReport) {
     const simulator = new MultiverseSocialMediaSimulator();
     const rawContent = await simulator.generateSocialMediaContent(universeDescription, newsReport);
-    const formattedContent = simulator.parseAndFormatContent(rawContent);
-    console.log(formattedContent);
+    const parsedPosts = simulator.parseAndFormatContent(rawContent);
+    const formattedDisplay = simulator.formatPostsForDisplay(parsedPosts);
+    console.log(formattedDisplay);
+    return parsedPosts;  // Return structured data for potential further use
 }
-
-// Call this function with the universe description and news report from your main script
 */
