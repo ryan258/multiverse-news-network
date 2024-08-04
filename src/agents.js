@@ -20,14 +20,25 @@ async function generateText(prompt) {
     }
 }
 
-async function alternateHistoryAgent() {
-    const prompt = `Create a brief description of a parallel universe where a major historical event had a different outcome. Specify:
+async function alternateHistoryAgent(userIdea = null) {
+    let prompt;
+    if (userIdea) {
+        prompt = `Create a brief description of a parallel universe based on the following user idea: "${userIdea}". Expand on this idea and specify:
+1. The divergence point (what historical event changed or what aspect of reality is different)
+2. A brief overview of how this change affected the course of history
+3. The current year in this universe
+4. Two major differences in technology, culture, or geopolitics compared to our universe
+
+Keep your response concise, focusing on the most impactful changes.`;
+    } else {
+        prompt = `Create a brief description of a parallel universe where a major historical event had a different outcome. Specify:
 1. The divergence point (what historical event changed)
 2. A brief overview of how this change affected the course of history
 3. The current year in this universe
 4. Two major differences in technology, culture, or geopolitics compared to our universe
 
 Keep your response concise, focusing on the most impactful changes.`;
+    }
     return generateText(prompt);
 }
 

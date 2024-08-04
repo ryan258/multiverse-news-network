@@ -60,10 +60,39 @@
             margin-left: 20px;
             font-style: italic;
         }
+        .input-section {
+            margin-bottom: 20px;
+        }
+        #user-input {
+            width: 70%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
     <h1>Multiverse News Network</h1>
+
+    <div class="input-section">
+        <input type="text" id="user-input" placeholder="Enter your alternate universe idea...">
+        <button id="submit-idea" class="button">Submit Idea</button>
+    </div>
+
+    <button id="generate-random" class="button">Generate Random Universe</button>
+    <p id="loading">Generating multiverse news... Please wait.</p>
+    
     <button id="generate-btn">Generate Multiverse News</button>
     <p id="loading">Generating multiverse news... Please wait.</p>
 
@@ -87,22 +116,32 @@
     </div>
 
     <script>
-        const generateBtn = document.getElementById('generate-btn');
+        const generateRandomBtn = document.getElementById('generate-random');
+        const submitIdeaBtn = document.getElementById('submit-idea');
+        const userInput = document.getElementById('user-input');
         const loadingMsg = document.getElementById('loading');
         const universeContent = document.getElementById('universe-content');
         const newsContent = document.getElementById('news-content');
         const postsContainer = document.getElementById('posts');
         const commentaryContent = document.getElementById('commentary-content');
 
-        generateBtn.addEventListener('click', generateMultiverseNews);
+        generateRandomBtn.addEventListener('click', () => generateMultiverseNews());
+        submitIdeaBtn.addEventListener('click', () => generateMultiverseNews(userInput.value));
 
-        async function generateMultiverseNews() {
-            generateBtn.disabled = true;
+        async function generateMultiverseNews(userIdea = null) {
+            generateRandomBtn.disabled = true;
+            submitIdeaBtn.disabled = true;
             loadingMsg.style.display = 'block';
             clearContent();
 
             try {
-                const response = await fetch('/generate-news', { method: 'POST' });
+                const response = await fetch('/generate-news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userIdea }),
+                });
                 const data = await response.json();
 
                 universeContent.textContent = data.universeDescription;
@@ -113,8 +152,10 @@
                 console.error('Error:', error);
                 alert('An error occurred while generating the multiverse news. Please try again.');
             } finally {
-                generateBtn.disabled = false;
+                generateRandomBtn.disabled = false;
+                submitIdeaBtn.disabled = false;
                 loadingMsg.style.display = 'none';
+                userInput.value = '';
             }
         }
 
