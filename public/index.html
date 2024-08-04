@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multiverse News Network</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,6 +81,27 @@
         .button:hover {
             background-color: #2980b9;
         }
+        .social-media-post {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .social-media-username {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .social-media-content {
+            margin: 10px 0;
+        }
+        .social-media-stats {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        .social-media-reaction {
+            margin-left: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -124,16 +146,16 @@
         const newsContent = document.getElementById('news-content');
         const postsContainer = document.getElementById('posts');
         const commentaryContent = document.getElementById('commentary-content');
-
+    
         generateRandomBtn.addEventListener('click', () => generateMultiverseNews());
         submitIdeaBtn.addEventListener('click', () => generateMultiverseNews(userInput.value));
-
+    
         async function generateMultiverseNews(userIdea = null) {
             generateRandomBtn.disabled = true;
             submitIdeaBtn.disabled = true;
             loadingMsg.style.display = 'block';
             clearContent();
-
+    
             try {
                 const response = await fetch('/generate-news', {
                     method: 'POST',
@@ -143,11 +165,11 @@
                     body: JSON.stringify({ userIdea }),
                 });
                 const data = await response.json();
-
-                universeContent.textContent = data.universeDescription;
-                newsContent.textContent = data.newsReport;
+    
+                universeContent.innerHTML = marked.parse(data.universeDescription);
+                newsContent.innerHTML = marked.parse(data.newsReport);
                 displaySocialMedia(data.socialMedia);
-                commentaryContent.textContent = data.commentary;
+                commentaryContent.innerHTML = marked.parse(data.commentary);
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while generating the multiverse news. Please try again.');
@@ -158,24 +180,30 @@
                 userInput.value = '';
             }
         }
-
+    
         function displaySocialMedia(posts) {
+            if (!Array.isArray(posts) || posts.length === 0) {
+                postsContainer.innerHTML = '<p>No social media posts available for this universe.</p>';
+                return;
+            }
+    
             postsContainer.innerHTML = posts.map(post => `
-                <div class="post">
-                    <p><span class="username">${post.username}</span>: ${post.post}</p>
-                    <p class="engagement">Likes: ${post.likes} | Shares: ${post.shares} | Comments: ${post.comments}</p>
+                <div class="social-media-post">
+                    <p><span class="social-media-username">${post.username}</span></p>
+                    <p class="social-media-content">${post.post}</p>
+                    <p class="social-media-stats">Likes: ${post.likes} | Shares: ${post.shares} | Comments: ${post.comments}</p>
                     ${post.reactions.map(reaction => `
-                        <p class="reaction"><span class="username">${reaction.username}</span>: ${reaction.comment}</p>
+                        <p class="social-media-reaction"><span class="social-media-username">${reaction.username}</span>: ${reaction.comment}</p>
                     `).join('')}
                 </div>
             `).join('');
         }
-
+    
         function clearContent() {
-            universeContent.textContent = '';
-            newsContent.textContent = '';
+            universeContent.innerHTML = '';
+            newsContent.innerHTML = '';
             postsContainer.innerHTML = '';
-            commentaryContent.textContent = '';
+            commentaryContent.innerHTML = '';
         }
     </script>
 </body>
