@@ -1,3 +1,4 @@
+const MultiverseSocialMediaSimulator = require('./socialMediaSimulator');
 const axios = require('axios');
 const fs = require('fs').promises;
 const readline = require('readline');
@@ -94,6 +95,12 @@ async function multiverseNewsSession() {
         
         const universeDescription = await alternateHistoryAgent();
         const newsReport = await newsReporterAgent(universeDescription);
+
+        const simulator = new MultiverseSocialMediaSimulator();
+        const socialMediaContent = await simulator.generateSocialMediaContent(universeDescription, newsReport);
+        await logOutput("\n=== Multiverse Social Media Buzz ===");
+        await logOutput(socialMediaContent);
+        
         const commentary = await commentaryAgent(universeDescription, newsReport);
         
         await logOutput("\n=== Multiverse News Broadcast Complete ===");
